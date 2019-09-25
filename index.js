@@ -99,9 +99,23 @@ module.exports = function(images, options, cb) {
 	
 	for(let file of images) {
 		p.push(loadImage(file, files));
-	}
+    }
 	
 	Promise.all(p).then(() => {
+        
+        let names = Object.keys(files);
+        for(let key of names) {
+            let img = files[key];
+            //img._base64 = file.contents.toString("base64");
+            let newWidth = img.width * options.reScale;
+            let newHeight = img.height * options.reScale;
+            img = img.resize(newWidth, newHeight);
+
+			img.width = newWidth;
+			img.height = newHeight;
+			files[img.name] = img;
+        }
+
 		FilesProcessor.start(files, options, 
 			(res) => {
 				if(cb) cb(res);
